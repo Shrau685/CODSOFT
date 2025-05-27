@@ -1,0 +1,36 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_squared_error
+
+# read data
+data = pd.read_csv("IMDb_India_Movies.csv")
+
+# keep only some columns
+data = data[["Genre", "Duration", "Year", "Rating"]]
+
+# drop rows with missing stuff
+data = data.dropna()
+
+# encode genre to numbers
+le = LabelEncoder()
+data["Genre"] = le.fit_transform(data["Genre"])
+
+# split into inputs and output
+X = data[["Genre", "Duration", "Year"]]
+y = data["Rating"]
+
+# train test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# make the model and train it
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# get predictions
+preds = model.predict(X_test)
+
+# check how it did
+mse = mean_squared_error(y_test, preds)
+print("MSE:", mse)
